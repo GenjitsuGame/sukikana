@@ -1,0 +1,3 @@
+[submodule "msdvis"]
+	path = msdvis
+	url = https://github.com/GenjitsuGame/msdvis
