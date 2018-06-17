@@ -2,6 +2,26 @@
 
 Content based music recommendation system
 
+## Configuration
+
+Copy the [sample configuration file](config.example.ini) at the root of the repository :
+
+`cp config.example.ini config.ini`
+
+and edit it with your own settings.
+
+## Project structure
+
+### [msdvis](msdvis)
+
+Repository (submodule) allowing to easily manipulate the Million Song Dataset and building a `csv` out of it.
+(`hdf5` -> `csv`)
+
+### [tasks](tasks)
+
+Python scripts to perform various tasks related to the project
+
+
 ## Resources :
 
 ### Papers
