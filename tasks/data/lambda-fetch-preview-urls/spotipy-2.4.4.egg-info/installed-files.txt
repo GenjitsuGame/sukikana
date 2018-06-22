@@ -1,0 +1,13 @@
+../spotipy/oauth2.py
+../spotipy/__init__.py
+../spotipy/util.py
+../spotipy/client.py
+../spotipy/__pycache__/oauth2.cpython-36.pyc
+../spotipy/__pycache__/__init__.cpython-36.pyc
+../spotipy/__pycache__/util.cpython-36.pyc
+../spotipy/__pycache__/client.cpython-36.pyc
+requires.txt
+SOURCES.txt
+dependency_links.txt
+PKG-INFO
+top_level.txt
