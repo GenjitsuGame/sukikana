@@ -1,7 +1,7 @@
 .idea
 .ipynb_checkpoints
 .python-version
-data
+/data
 config.ini
 .DS_STORE
 __pycache__
