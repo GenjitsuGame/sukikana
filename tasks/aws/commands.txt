@@ -1,1 +1,0 @@
-python36 data/build_dataset.py --start 0 --limit 10 -o '{}-{}-full_dataset.csv' --output_type AWS -l 'test-run' --msd_relevant_path
