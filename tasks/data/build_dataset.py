@@ -169,5 +169,5 @@ if __name__ == '__main__':
     if instance_label:
         sns = boto_session.resource('sns')
         topic = sns.Topic(paramGetter.get('sukikana_processing_topic'))
-        topic.publish(Message=json.dumps({'default': json.dumps({'status': 'done', 'label': instance_label})}))
+        topic.publish(Message=json.dumps({'default': json.dumps({'region': 'eu-west-3', 'label': instance_label})}))
 
