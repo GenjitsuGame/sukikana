@@ -1,3 +1,5 @@
+import json
+
 import spotipy
 import pandas as pd
 import numpy as np
@@ -10,7 +12,8 @@ import sys
 import os
 from io import StringIO
 import argparse
-import boto_utils
+import param_utils
+import boto3
 
 
 def _apply_df(args):
@@ -107,6 +110,7 @@ if __name__ == '__main__':
     arg_parser.add_argument('--limit', type=int)
     arg_parser.add_argument('--output_type', type=str, choices=['LOCAL', 'AWS'])
     arg_parser.add_argument('-o', '--output', type=str)
+    arg_parser.add_argument('-l', '--instance_label', type=str)
     args = vars(arg_parser.parse_args())
 
     config = configparser.ConfigParser()
@@ -114,8 +118,13 @@ if __name__ == '__main__':
     if config_path is not None:
         config.read(config_path)
 
-    sp_client_id = os.environ.get('SP_CLIENT_ID', config.get('SPOTIFY', 'client_id', fallback=None))
-    sp_secret = os.environ.get('SP_SECRET', config.get('SPOTIFY', 'client_secret', fallback=None))
+    boto_session = boto3.session.Session(region_name='eu-west-3')
+    
+    paramGetter = param_utils.ParamGetter(boto_session=boto_session, config=config, args=args, env=True)
+    
+
+    sp_client_id = paramGetter.get('spotify_client_id')
+    sp_secret = paramGetter.get('spotify_secret')
     sp = spotipy.Spotify(
         client_credentials_manager=SpotifyClientCredentials(client_id=sp_client_id, client_secret=sp_secret),
         requests_timeout=10
@@ -123,14 +132,13 @@ if __name__ == '__main__':
 
     spotify = SpotifyController(sp)
 
-    napster_apikey = os.environ.get('NAPSTER_APIKEY', config.get('NAPSTER', 'apikey', fallback=None))
+    napster_apikey = paramGetter.get('napster_apikey')
     napster = NapsterController(napster_apikey)
 
-    df_msd = pd.read_csv(os.environ.get('MSD_RELEVANT_URL', config.get('DATA', 'msd_relevant_path', fallback=None)),
-                         sep=';')
+    df_msd = pd.read_csv(paramGetter.get('msd_relevant_path'), sep=';')
 
-    start = int(os.environ.get('START', args.get('start') or 0))
-    limit = int(os.environ.get('LIMIT', args.get('limit') or df_msd.shape[0]))
+    start = int(paramGetter.get('start', ssm=False, fallback=0))
+    limit = int(paramGetter.get('LIMIT', ssm=False, fallback=df_msd.shape[0]))
 
     df_song = df_msd.loc[:, ['artist_name', 'title']][start:limit].apply(
         lambda row: row['artist_name'] + ' ' + row['title'], axis=1)
@@ -139,22 +147,27 @@ if __name__ == '__main__':
 
     df_msd = df_msd[start:limit].join(tuples_to_df(df_song.apply(search_controller.search)))
 
-    output_path = os.environ.get('FULL_DATASET_NAME',
-                                 args.get('output') or config.get('DATA', 'full_dataset_path', fallback=None))
+    output_path = paramGetter.get('full_dataset_path', ssm=False)
 
     if output_path is None:
         raise Exception('no output_path specified')
 
     output_path = output_path.format(start, limit)
-    output_type = os.environ.get('OUTPUT_TYPE', args.get('output_type') or 'LOCAL')
+    output_type = paramGetter.get('output_type', ssm=False, fallback='LOCAL')
     if output_type == 'AWS':
         buffer_df = StringIO()
         df_msd.to_csv(buffer_df, sep=';', index=False)
-        boto_utils \
-            .get_session() \
+        boto_session\
             .resource('s3') \
             .Object(os.environ.get('S3_DATASETS_BUCKET', config.get('AWS', 's3_datasets_bucket', fallback=None)),
                     output_path) \
             .put(Body=buffer_df.getvalue())
     elif output_type == 'LOCAL':
         df_msd.to_csv(output_path, sep=';', index=False)
+
+    instance_label = paramGetter.get('instance_label')
+    if instance_label:
+        sns = boto_session.resource('sns')
+        topic = sns.Topic(paramGetter.get('sukikana_processing_topic'))
+        topic.publish(Message=json.dumps({'default': json.dumps({'status': 'done', 'label': instance_label})}))
+
