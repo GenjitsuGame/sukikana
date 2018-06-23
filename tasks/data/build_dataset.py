@@ -147,7 +147,7 @@ if __name__ == '__main__':
 
     df_msd = df_msd[start:limit].join(tuples_to_df(df_song.apply(search_controller.search)))
 
-    output_path = paramGetter.get('full_dataset_path', ssm=False)
+    output_path = paramGetter.get('full_dataset_path', ssm=False, fallback=paramGetter.get('output', ssm=False))
 
     if output_path is None:
         raise Exception('no output_path specified')
@@ -159,8 +159,7 @@ if __name__ == '__main__':
         df_msd.to_csv(buffer_df, sep=';', index=False)
         boto_session\
             .resource('s3') \
-            .Object(os.environ.get('S3_DATASETS_BUCKET', config.get('AWS', 's3_datasets_bucket', fallback=None)),
-                    output_path) \
+            .Object(paramGetter.get('sukikana_dataset_bucket'), output_path) \
             .put(Body=buffer_df.getvalue())
     elif output_type == 'LOCAL':
         df_msd.to_csv(output_path, sep=';', index=False)
