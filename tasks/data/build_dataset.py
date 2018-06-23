@@ -109,6 +109,7 @@ if __name__ == '__main__':
     arg_parser.add_argument('--start', type=int, default=0)
     arg_parser.add_argument('--limit', type=int)
     arg_parser.add_argument('--output_type', type=str, choices=['LOCAL', 'AWS'])
+    arg_parser.add_argument('--msd_relevant_path')
     arg_parser.add_argument('-o', '--output', type=str)
     arg_parser.add_argument('-l', '--instance_label', type=str)
     args = vars(arg_parser.parse_args())
