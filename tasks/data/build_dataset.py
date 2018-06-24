@@ -150,7 +150,7 @@ if __name__ == '__main__':
     df_song = df_msd.loc[:, ['artist_name', 'title']][start:limit].apply(
         lambda row: row['artist_name'] + ' ' + row['title'], axis=1)
 
-    search_controller = SearchController([napster, spotify], limit, verbose=paramGetter.get('silent', ssm=False))
+    search_controller = SearchController([napster, spotify], limit, verbose=~paramGetter.get('silent', ssm=False))
 
     df_msd = df_msd[start:limit].join(tuples_to_df(df_song.apply(search_controller.search)))
 
