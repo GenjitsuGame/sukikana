@@ -164,17 +164,39 @@ if __name__ == '__main__':
     elif output_type == 'LOCAL':
         df_msd.to_csv(output_path, sep=';', index=False)
 
-    instance_label = paramGetter.get('instance_label')
+    instance_label = paramGetter.get('instance_label', ssm=False, config=False)
+    instance_id = paramGetter.get('instance_id', ssm=False, config=False, args=False)
     if instance_label:
         sns = boto_session.resource('sns')
         topic = sns.Topic(paramGetter.get('sukikana_processing_topic'))
         topic.publish(MessageAttributes={
+            'by': {
+                'DataType': 'String',
+                'StringValue': 'tag:label'
+            },
             'region': {
                 'DataType': 'String',
-                'StringValue':'eu-west-3'
+                'StringValue': 'eu-west-3'
             },
-            'label': {
+            'value': {
                 'DataType': 'String',
                 'StringValue': instance_label
             }
-        }, Message='done')
+        }, Message='Build dataset done')
+    elif instance_id:
+        sns = boto_session.resource('sns')
+        topic = sns.Topic(paramGetter.get('sukikana_processing_topic'))
+        topic.publish(MessageAttributes={
+            'by': {
+                'DataType': 'String',
+                'StringValue': 'instance-id'
+            },
+            'region': {
+                'DataType': 'String',
+                'StringValue': 'eu-west-3'
+            },
+            'value': {
+                'DataType': 'String',
+                'StringValue': instance_id
+            }
+        }, Message='Build dataset done')
