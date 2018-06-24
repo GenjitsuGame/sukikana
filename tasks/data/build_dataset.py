@@ -112,6 +112,7 @@ if __name__ == '__main__':
     arg_parser.add_argument('--msd_relevant_path')
     arg_parser.add_argument('-o', '--output', type=str)
     arg_parser.add_argument('-l', '--instance_label', type=str)
+    arg_parser.add_argument('-i', '--instance_id', type=str)
     args = vars(arg_parser.parse_args())
 
     config = configparser.ConfigParser()
