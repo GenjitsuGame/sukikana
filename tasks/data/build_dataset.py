@@ -140,6 +140,9 @@ if __name__ == '__main__':
     start = int(paramGetter.get('start', ssm=False, fallback=0))
     limit = int(paramGetter.get('LIMIT', ssm=False, fallback=df_msd.shape[0]))
 
+    start = min(start, df_msd.shape[0])
+    limit = min(start + limit, df_msd.shape[0])
+
     df_song = df_msd.loc[:, ['artist_name', 'title']][start:limit].apply(
         lambda row: row['artist_name'] + ' ' + row['title'], axis=1)
 
