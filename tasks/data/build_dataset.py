@@ -120,9 +120,8 @@ if __name__ == '__main__':
         config.read(config_path)
 
     boto_session = boto3.session.Session(region_name='eu-west-3')
-    
+
     paramGetter = param_utils.ParamGetter(boto_session=boto_session, config=config, args=args, env=True)
-    
 
     sp_client_id = paramGetter.get('spotify_client_id')
     sp_secret = paramGetter.get('spotify_secret')
@@ -158,7 +157,7 @@ if __name__ == '__main__':
     if output_type == 'AWS':
         buffer_df = StringIO()
         df_msd.to_csv(buffer_df, sep=';', index=False)
-        boto_session\
+        boto_session \
             .resource('s3') \
             .Object(paramGetter.get('sukikana_dataset_bucket'), output_path) \
             .put(Body=buffer_df.getvalue())
@@ -169,5 +168,13 @@ if __name__ == '__main__':
     if instance_label:
         sns = boto_session.resource('sns')
         topic = sns.Topic(paramGetter.get('sukikana_processing_topic'))
-        topic.publish(Message=json.dumps({'default': json.dumps({'region': 'eu-west-3', 'label': instance_label})}))
-
+        topic.publish(MessageAttributes={
+            'region': {
+                'DataType': 'String',
+                'StringValue':'eu-west-3'
+            },
+            'label': {
+                'DataType': 'String',
+                'StringValue': instance_label
+            }
+        }, Message='done')
