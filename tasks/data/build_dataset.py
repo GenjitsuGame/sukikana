@@ -86,15 +86,17 @@ def tuples_to_df(tups):
 
 
 class SearchController:
-    def __init__(self, searchers, limit):
+    def __init__(self, searchers, limit, verbose=True):
         self.searchers = searchers
         self.count = 0
         self.limit = limit
+        self.logging = verbose
 
     def search(self, query):
         progress = (self.count * 100.) / self.limit
-        sys.stdout.write("==== Compiling subset of data...[ {:.2f}% ] ==== \r".format(progress))
-        sys.stdout.flush()
+        if self.logging:
+            sys.stdout.write("==== Compiling subset of data...[ {:.2f}% ] ==== \r".format(progress))
+            sys.stdout.flush()
         self.count += 1
         for searcher in self.searchers:
             res = searcher.search(query)
@@ -113,6 +115,7 @@ if __name__ == '__main__':
     arg_parser.add_argument('-o', '--output', type=str)
     arg_parser.add_argument('-l', '--instance_label', type=str)
     arg_parser.add_argument('-i', '--instance_id', type=str)
+    arg_parser.add_argument('-s', '--silent')
     args = vars(arg_parser.parse_args())
 
     config = configparser.ConfigParser()
@@ -147,7 +150,7 @@ if __name__ == '__main__':
     df_song = df_msd.loc[:, ['artist_name', 'title']][start:limit].apply(
         lambda row: row['artist_name'] + ' ' + row['title'], axis=1)
 
-    search_controller = SearchController([napster, spotify], limit)
+    search_controller = SearchController([napster, spotify], limit, verbose=paramGetter.get('--silent', ssm=False))
 
     df_msd = df_msd[start:limit].join(tuples_to_df(df_song.apply(search_controller.search)))
 
