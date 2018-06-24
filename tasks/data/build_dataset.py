@@ -115,7 +115,7 @@ if __name__ == '__main__':
     arg_parser.add_argument('-o', '--output', type=str)
     arg_parser.add_argument('-l', '--instance_label', type=str)
     arg_parser.add_argument('-i', '--instance_id', type=str)
-    arg_parser.add_argument('-s', '--silent')
+    arg_parser.add_argument('-s', '--silent', action='store_true')
     args = vars(arg_parser.parse_args())
 
     config = configparser.ConfigParser()
