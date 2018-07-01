@@ -1,5 +1,3 @@
-import json
-
 import spotipy
 import pandas as pd
 import numpy as np
@@ -142,7 +140,7 @@ if __name__ == '__main__':
     df_msd = pd.read_csv(paramGetter.get('msd_relevant_path'), sep=';')
 
     start = int(paramGetter.get('start', ssm=False, fallback=0))
-    limit = int(paramGetter.get('LIMIT', ssm=False, fallback=df_msd.shape[0]))
+    limit = int(paramGetter.get('limit', ssm=False, fallback=df_msd.shape[0]))
 
     start = min(start, df_msd.shape[0])
     limit = min(start + limit, df_msd.shape[0])
