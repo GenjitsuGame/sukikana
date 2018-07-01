@@ -1,7 +1,6 @@
-from tempfile import TemporaryFile, NamedTemporaryFile
-from io import BytesIO
 import boto3
 import numpy as np
+from tempfile import  NamedTemporaryFile
 from librosa.feature import melspectrogram
 import librosa
 
