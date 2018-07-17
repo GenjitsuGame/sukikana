@@ -84,3 +84,6 @@ if __name__ == '__main__':
         except requests.exceptions.RequestException as e:
             print(e)
             print('error on {}'.format(song_id))
+        except ValueError as e:
+            print(e)
+            print('error on {}'.format(song_id))

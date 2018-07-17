@@ -20,3 +20,5 @@ if __name__ == '__main__':
     paramGetter = param_utils.ParamGetter(boto_session=boto_session, config=config, args=args, env=True)
 
     s3 = boto_session.resource('s3')
+
+
