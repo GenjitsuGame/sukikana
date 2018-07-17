@@ -11,7 +11,7 @@ const { validationResult, body } = Check;
 
 
 router
-  .route('/msd')
+  .route('/')
   .post([
     body('msdId')
       .exists(),
