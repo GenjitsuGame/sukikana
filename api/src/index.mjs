@@ -35,7 +35,7 @@ restify.serve(restifyRouter, Song, { name: 'songs', lean: true, limit: 50 });
 app.use(restifyRouter);
 
 app.use((err, req, res, next) => {
-  console.log(err.message);
+  console.log(err);
   if (!err.expose) {
     if (!(err instanceof HttpError.HttpError)) {
       err = new HttpError.InternalServerError();
