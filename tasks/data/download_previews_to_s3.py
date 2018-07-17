@@ -14,6 +14,7 @@ if __name__ == '__main__':
     arg_parser.add_argument('--start', type=int, default=0)
     arg_parser.add_argument('--limit', type=int)
     arg_parser.add_argument('-b, --s3_previews_bucket', type=str)
+    arg_parser.add_argument('--check', action='store_true')
     arg_parser.add_argument('-c', '--config', type=str)
     args = vars(arg_parser.parse_args())
 
@@ -37,16 +38,25 @@ if __name__ == '__main__':
 
     s3 = boto_session.resource('s3')
     sukikana_bucket = paramGetter.get('s3_previews_bucket', fallback='sukikana')
+    i = 0
     for row in df.iloc[start:limit].itertuples():
+        print(i)
+        i += 1
         song_id = getattr(row, 'song_id')
         preview_url = getattr(row, 'remote_preview_url')
         try:
             s3.Object(sukikana_bucket, song_id).load()
         except botocore.exceptions.ClientError as e:
             if e.response['Error']['Code'] == "404":
+                if paramGetter.get('check', ssm=False, env=False, config=False):
+                    print('{} : KO'.format(song_id))
+                    continue
                 # The object does not exist.
-                res = requests.get(preview_url)
-                if res.status_code == 200:
-                    s3 \
-                        .Object(sukikana_bucket, song_id) \
-                        .put(Body=res.content, StorageClass='STANDARD_IA', ACL='private')
+                try:
+                    res = requests.get(preview_url, timeout=30)
+                    if res.status_code == 200:
+                        s3 \
+                            .Object(sukikana_bucket, song_id) \
+                            .put(Body=res.content, ACL='private')
+                except:
+                    print(song_id, preview_url)
