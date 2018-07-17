@@ -60,26 +60,27 @@ if __name__ == '__main__':
 
     i = 0
     for song_id, record in df_meta.iloc[start:limit].iterrows():
+        print(i)
+        i += 1
         try:
             req_get = requests.get(api, params={'query': json.dumps({'msdId': song_id})}, timeout=5)
             req_get.raise_for_status()
             res_get = req_get.json()
-            if res_get:
+            print(res_get)
+            if len(res_get) != 0:
                 print('already indexed {}'.format(song_id))
-                continue
-            mels = get_logmels(s3, song_id)
-            data = {
-                'msdId': song_id,
-                'artist': record['artist_name'],
-                'title': record['title'],
-                'latents': df_latent.loc[song_id].values.tolist(),
-                'mels': mels.reshape(-1).tolist(),
-                'nComponents': mels.shape[0]
-            }
-            req_post = requests.post(api, json=data)
-            req_post.raise_for_status()
+            else:
+                mels = get_logmels(s3, song_id)
+                data = {
+                    'msdId': song_id,
+                    'artist': record['artist_name'],
+                    'title': record['title'],
+                    'latents': df_latent.loc[song_id].values.tolist(),
+                    'mels': mels.reshape(-1).tolist(),
+                    'nComponents': mels.shape[0]
+                }
+                req_post = requests.post(api, json=data)
+                req_post.raise_for_status()
         except requests.exceptions.RequestException as e:
             print(e)
-            print('error on {}'.format(song_id))
-        except:
             print('error on {}'.format(song_id))
