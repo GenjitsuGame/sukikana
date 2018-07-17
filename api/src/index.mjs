@@ -17,7 +17,7 @@ morgan.token('id', req => req.id);
 morgan.token('body', req => req.method === 'POST' ? JSON.stringify(req.body) : '');
 
 app.disable('etag');
-app.use(morgan(":id :remote-addr - :remote-user [:date[clf]] \":method :url HTTP/:http-version\" :status :body :res[content-length] \":referrer\" \":user-agent\""));
+app.use(morgan(":id :remote-addr - :remote-user [:date[clf]] \":method :url HTTP/:http-version\" :status :res[content-length] \":referrer\" \":user-agent\""));
 
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: false }));
 app.use(bodyParser.json({limit:1024102420, type:'application/json'}));
