@@ -1,4 +1,8 @@
 {
+  "elasticsearch": {
+    "host": "35.204.8.83:9200",
+    "index": "sukikana"
+  },
   "port": 3099,
   "mongo": {
     "host": "35.195.165.226",
