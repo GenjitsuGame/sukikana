@@ -1,3 +1,8 @@
 {
-  "port": 3099
+  "port": 3099,
+  "mongo": {
+    "host": "35.195.165.226",
+    "port": 27017,
+    "database": "sukikana"
+  }
 }

@@ -2,22 +2,32 @@
   "name": "sukikana",
   "version": "0.0.1",
   "description": "sukikana web api",
-  "main": "src/index.js",
+  "main": "src/index.mjs",
   "scripts": {
+    "mongo-start": "docker run --name sukikana-mongo -v sukikana-mongo:/data/db -p 30017:27017 -d mongo",
+    "mongo-down": "docker stop sukikana-mongo && docker rm sukikana-mongo",
+    "dev": "nodemon -w . --experimental-modules",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "pascal.luttgens@opendatasoft.com",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.18.3",
     "compression": "^1.7.2",
     "config": "^1.30.0",
     "cors": "^2.8.4",
     "express": "^4.16.3",
     "express-request-id": "^1.4.0",
+    "express-restify-mongoose": "^5.0.0",
+    "express-validator": "^5.2.0",
     "helmet": "^3.12.1",
     "http-errors": "^1.6.3",
+    "mongoose": "^5.2.1",
     "morgan": "^1.9.0",
     "request": "^2.87.0",
     "request-promise": "^4.2.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.5"
   }
 }
