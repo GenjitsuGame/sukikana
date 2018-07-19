@@ -30,7 +30,7 @@ app.use(addRequestId());
 
 const restifyRouter = express.Router();
 
-restify.serve(restifyRouter, Song, { name: 'songs', lean: true, limit: 50 });
+restify.serve(restifyRouter, Song, { name: 'songs', lean: true, limit: 1000 });
 
 app.use(restifyRouter);
 
